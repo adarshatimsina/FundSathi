@@ -4,12 +4,14 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { toast } from 'react-toastify'
+import { useRouter } from 'next/navigation'
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   })
+  const router = useRouter()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -17,15 +19,30 @@ const LoginPage = () => {
   }
 
   const handleLogin = async () => {
+    // Basic validation for email and password
+    if (!formData.email || !formData.password) {
+      toast.error('Please enter both email and password.')
+      return
+    }
+
     try {
-      // You will handle the logic to send this data to the backend later
-      console.log('Login data:', formData)
+      const res = await fetch('/api/login', {
+    method: 'POST',
+   headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify(formData),
+  credentials: 'include', // ✅ This is required to store cookies!
+  })
 
-      // For now, show success toast
-      toast.success('Login successful!')
+      const data = await res.json()
 
-      // Example error case (for testing)
-      // toast.error('Invalid email or password')
+      if (res.ok) {
+        toast.success('Login successful! 🎉')
+        router.push('/') // Redirect to homepage after successful login
+      } else {
+        toast.error(data.error || 'Invalid email or password')
+      }
     } catch (err) {
       console.error(err)
       toast.error('Error during login!')

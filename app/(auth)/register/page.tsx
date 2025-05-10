@@ -4,8 +4,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import axios from 'axios'
-import bcrypt from 'bcryptjs'
-import { toast } from 'react-toastify'
+import { toast, ToastContainer } from 'react-toastify'
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
@@ -23,24 +22,29 @@ const RegisterPage = () => {
   }
 
   const handleRegister = async () => {
+    if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      toast.error('Please enter a valid email address.')
+      return
+    }
+
     try {
-      const hashedPassword = await bcrypt.hash(formData.password, 10)
-
-      const dataToSend = {
-        ...formData,
-        password: hashedPassword,
-      }
-
-      const res = await axios.post('/api/register', dataToSend)
+      const res = await axios.post('/api/register', formData)
 
       if (res.status === 201) {
         toast.success('Registration successful!')
+        setTimeout(() => {
+          window.location.href = '/login'
+        }, 2000)
       } else {
         toast.error('Something went wrong!')
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err)
-      toast.error('Error during registration!')
+      if (err.response?.status === 400) {
+        toast.error(err.response?.data?.error || 'Error during registration!')
+      } else {
+        toast.error('Error during registration!')
+      }
     }
   }
 
@@ -53,62 +57,74 @@ const RegisterPage = () => {
         <div>
           <Label htmlFor="first_name">First Name</Label>
           <Input
+            id="first_name"
             name="first_name"
             value={formData.first_name}
             onChange={handleChange}
             placeholder="John"
+            autoComplete="given-name"
           />
         </div>
 
         <div>
           <Label htmlFor="last_name">Last Name</Label>
           <Input
+            id="last_name"
             name="last_name"
             value={formData.last_name}
             onChange={handleChange}
             placeholder="Doe"
+            autoComplete="family-name"
           />
         </div>
 
         <div>
           <Label htmlFor="email">Email</Label>
           <Input
+            id="email"
             name="email"
             type="email"
             value={formData.email}
             onChange={handleChange}
             placeholder="john@example.com"
+            autoComplete="email"
           />
         </div>
 
         <div>
           <Label htmlFor="phone_number">Phone Number</Label>
           <Input
+            id="phone_number"
             name="phone_number"
             value={formData.phone_number}
             onChange={handleChange}
             placeholder="1234567890"
+            autoComplete="tel"
           />
         </div>
 
         <div>
           <Label htmlFor="password">Password</Label>
           <Input
+            id="password"
             name="password"
             type="password"
             value={formData.password}
             onChange={handleChange}
             placeholder="********"
+            autoComplete="new-password"
           />
         </div>
 
         <div>
           <Label htmlFor="profile_picture_url">Profile Picture URL</Label>
           <Input
+            id="profile_picture_url"
             name="profile_picture_url"
             value={formData.profile_picture_url}
             onChange={handleChange}
             placeholder="https://example.com/profile.jpg"
+            autoComplete="url"
           />
         </div>
       </div>
@@ -123,6 +139,8 @@ const RegisterPage = () => {
           Login
         </a>
       </p>
+
+      <ToastContainer />
     </div>
   )
 }

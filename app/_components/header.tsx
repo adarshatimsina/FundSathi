@@ -41,6 +41,16 @@ function Header() {
 
       <div className="flex gap-6 items-center">
         <HeartHandshake className="w-8 h-8 text-yellow-400 transition-all duration-300 hover:text-yellow-500" />
+        <Link href="/login">
+            <Button className="bg-white text-blue-700 hover:bg-white/90 font-bold py-2 px-6 rounded-md shadow-md transition-all duration-300">
+              Login
+            </Button>
+          </Link>
+          <Link href="/register">
+            <Button className="bg-white text-blue-700 hover:bg-white/90 font-bold py-2 px-6 rounded-md shadow-md transition-all duration-300">
+              Register
+            </Button>
+          </Link>
 
         <Link href="/dashboard">
           <Button className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-md shadow-md transition-all duration-300">
